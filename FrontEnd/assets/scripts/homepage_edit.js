@@ -40,6 +40,24 @@ for (let i = 0; i < modalBackground.length; i++) {
     })
 }
 
+function logout() {
+    const logout = document.getElementById("login")
+
+    logout.addEventListener("click", ()=>{
+
+        const token = sessionStorage.getItem("token")
+        const userId = sessionStorage.getItem("userId")
+
+        if(token && userId){
+            window.sessionStorage.removeItem("token")
+            window.sessionStorage.removeItem("userId")
+            window.location.href = "index.html"
+        }else{
+            window.location.href = "login.html"
+        }
+    })
+
+}
 
 
 async function getImageModal() {
@@ -76,6 +94,10 @@ async function getImageModal() {
                 }
             })
             div.remove()
+
+            const reset = document.querySelector(".gallery")
+            reset.innerHTML= ""
+            await getImageHomePageEdit()
         })
     }
 }
@@ -153,7 +175,7 @@ async function addImageHomePageEdit() {
 function btnControl(){
     const inputImgAdd = document.getElementById("img-import")
 
-    if(titreValue!=="" && cateValue!=="" ){
+    if(titreValue!=="" && cateValue!==""){
 
         btnOn.classList.remove("btn-valider-false")
         btnOn.classList.add("btn-valider-true")
@@ -167,9 +189,9 @@ function btnControl(){
     }
 }
 
-function modalAddValider() {
+async function modalAddValider() {
     const btnValider = document.getElementById("btn-on")
-    btnValider.addEventListener("click",(e)=>{
+    btnValider.addEventListener("click", async (e)=>{
         e.preventDefault()
 
         const data = new FormData()
@@ -178,19 +200,27 @@ function modalAddValider() {
         data.append("image", inputImgAdd.files[0])
         data.append("category", Number(cateValue))
 
-        fetch("http://localhost:5678/api/works",{
+        await fetch("http://localhost:5678/api/works",{
             method:"POST",
             headers:{
                 "Authorization": `Bearer ${window.sessionStorage.getItem("token")}`,
             },
             body: data
         })
+        const reset = document.querySelector(".gallery")
+        reset.innerHTML= ""
+        await getImageHomePageEdit()
+
+        const modalReset = document.querySelector(".modal-grid-images")
+        modalReset.innerHTML=""
+        await getImageModal()
 
         modalForm.classList.add("modal-hidden")
+
     })
 }
 
-
+logout()
 addImageHomePageEdit()
 getImageModal()
 getImageHomePageEdit()

@@ -1,5 +1,27 @@
 let elements = []
 
+function logout() {
+    const logout = document.getElementById("login")
+
+    const token = sessionStorage.getItem("token")
+    const userId = sessionStorage.getItem("userId")
+
+    if(token && userId){
+        logout.innerText="Administration"
+    }else{
+        logout.innerText="login"
+    }
+
+    logout.addEventListener("click", ()=>{
+        if(token && userId){
+            window.location.href = "homepage_edit.html"
+        }else{
+            window.location.href = "login.html"
+        }
+    })
+
+}
+
 async function getCategory() {
 
     const reponse = await fetch ("http://localhost:5678/api/categories")
@@ -88,6 +110,7 @@ async function afficherElements(elements) {
     }
 }
 
+logout()
 getCategory()
 getElements()
 afficherElements(elements)
